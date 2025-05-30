@@ -1,6 +1,7 @@
 package com.example.pixel_deposit_api.data.entity;
 
 import com.example.pixel_deposit_api.exception.InsufficientBalanceException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +27,8 @@ public class Account {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @Column(name = "initial_balance")
+    private BigDecimal initialBalance;
     private BigDecimal balance = BigDecimal.ZERO;
 
     public static Account forUser(User user) {

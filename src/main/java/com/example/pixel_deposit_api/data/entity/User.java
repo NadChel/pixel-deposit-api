@@ -9,6 +9,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
 
@@ -24,6 +25,29 @@ public class User {
     private String name;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Account account;
+
+    @Nullable
+    public BigDecimal getInitialAccountBalance() {
+        BigDecimal initialAccountBalance = account == null ?
+                null : account.getInitialBalance();
+        return initialAccountBalance;
+    }
+
+    public BigDecimal getAccountBalance() {
+        BigDecimal accountBalance = account == null ?
+                BigDecimal.ZERO : account.getBalance();
+        return accountBalance;
+    }
+
+    public void setInitialAccountBalance(BigDecimal initialAccountBalance) {
+        ensureAccountSet();
+        account.setInitialBalance(initialAccountBalance);
+    }
+
+    public void setAccountBalance(BigDecimal newBalance) {
+        ensureAccountSet();
+        account.setBalance(newBalance);
+    }
 
     public void increaseAccountBalance(BigDecimal amount) {
         ensureAccountSet();

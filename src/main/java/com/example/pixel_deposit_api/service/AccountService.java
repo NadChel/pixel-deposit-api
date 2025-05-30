@@ -6,8 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface AccountService {
 
-    UserResponseDto makeDeposit(long id, DepositRequestDto depositDto);
+    UserResponseDto findById(long userId);
+
+    UserResponseDto makeDeposit(long userId, DepositRequestDto depositDto);
 
     @Transactional(readOnly = false)
-    UserResponseDto withdrawFromDeposit(long id, DepositRequestDto depositDto);
+    UserResponseDto withdrawFromDeposit(long userId, DepositRequestDto depositDto);
 }
