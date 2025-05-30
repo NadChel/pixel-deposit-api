@@ -1,6 +1,6 @@
 package com.example.pixel_deposit_api.config;
 
-import com.example.pixel_deposit_api.service.UserPermissionService;
+import com.example.pixel_deposit_api.service.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Objects;
+import java.util.Optional;
 
 @Configuration
 @EnableMethodSecurity
@@ -30,13 +30,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserPermissionService userPermissionService() {
-        return userId -> {
+    public AuthenticationService authenticationService() {
+        return () -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) return false;
+            if (authentication == null || !authentication.isAuthenticated()) return Optional.empty();
             Jwt jwt = (Jwt) authentication.getPrincipal();
             Long currentUserId = jwt.getClaim("userid");
-            return Objects.equals(currentUserId, userId);
+            return Optional.ofNullable(currentUserId);
         };
     }
 }

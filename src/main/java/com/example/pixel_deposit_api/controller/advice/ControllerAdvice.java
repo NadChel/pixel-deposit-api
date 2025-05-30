@@ -1,4 +1,4 @@
-package com.example.pixel_deposit_api.controller;
+package com.example.pixel_deposit_api.controller.advice;
 
 import com.example.pixel_deposit_api.exception.InsufficientBalanceException;
 import jakarta.persistence.EntityNotFoundException;
