@@ -1,6 +1,6 @@
 package com.example.pixel_deposit_api.controller.advice;
 
-import com.example.pixel_deposit_api.exception.InsufficientBalanceException;
+import com.example.pixel_deposit_api.exception.AccountException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -22,18 +22,18 @@ public class ControllerAdvice {
         String message = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("\n"));
-        return badRequestWithMessage(message);
+        return unprocessableEntityWithMessage(message);
     }
 
-    private static ResponseEntity<String> badRequestWithMessage(String message) {
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    private static ResponseEntity<String> unprocessableEntityWithMessage(String message) {
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
         return response;
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleConstraintViolation(MethodArgumentNotValidException e) {
+    public ResponseEntity<String> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
         String message = createObjectErrorMessage(e);
-        return badRequestWithMessage(message);
+        return unprocessableEntityWithMessage(message);
     }
 
     private static String createObjectErrorMessage(MethodArgumentNotValidException e) {
@@ -48,16 +48,16 @@ public class ControllerAdvice {
 
     @ExceptionHandler
     public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException e) {
-        return badRequestWithMessage(e);
+        return unprocessableEntityWithMessage(e);
     }
 
-    private static ResponseEntity<String> badRequestWithMessage(Exception e) {
+    private static ResponseEntity<String> unprocessableEntityWithMessage(Exception e) {
         String message = e.getMessage();
-        return badRequestWithMessage(message);
+        return unprocessableEntityWithMessage(message);
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleInsufficientBalance(InsufficientBalanceException e) {
-        return badRequestWithMessage(e);
+    public ResponseEntity<String> handleAccount(AccountException e) {
+        return unprocessableEntityWithMessage(e);
     }
 }

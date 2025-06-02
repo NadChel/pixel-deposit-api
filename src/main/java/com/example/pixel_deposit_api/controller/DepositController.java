@@ -4,6 +4,7 @@ import com.example.pixel_deposit_api.data.dto.request.DepositRequestDto;
 import com.example.pixel_deposit_api.data.dto.response.UserResponseDto;
 import com.example.pixel_deposit_api.service.AccountService;
 import com.example.pixel_deposit_api.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ public class DepositController {
     private final AuthenticationService authenticationService;
 
     @GetMapping
+    @Operation(description = "Returns account details of the user associated with the provided token.")
     public ResponseEntity<UserResponseDto> getAccountBalance() {
         Long userId = getUserId();
         UserResponseDto userResponseDto = accountService.findById(userId);
@@ -47,6 +49,9 @@ public class DepositController {
     }
 
     @PatchMapping("/add")
+    @Operation(description = """
+            Makes a deposit to this user's account, creating one if necessary.
+            If it's a first deposit, this operation will initiate interest accrual.""")
     public ResponseEntity<UserResponseDto> makeDeposit(@RequestBody @Valid DepositRequestDto depositDto) {
         Long userId = getUserId();
         UserResponseDto userResponseDto = accountService.makeDeposit(userId, depositDto);
@@ -54,9 +59,10 @@ public class DepositController {
     }
 
     @PatchMapping("/withdraw")
+    @Operation(description = "Withdraws from this user's account.")
     public ResponseEntity<UserResponseDto> withdrawFromDeposit(@RequestBody @Valid DepositRequestDto depositDto) {
         Long userId = getUserId();
-        UserResponseDto userResponseDto = accountService.withdrawFromDeposit(userId, depositDto);
+        UserResponseDto userResponseDto = accountService.withdraw(userId, depositDto);
         return ResponseEntity.ok(userResponseDto);
     }
 }

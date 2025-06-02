@@ -26,7 +26,16 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UserResponseDto findById(long userId) {
         User user = loadUser(userId);
-        return userMapper.toResponseDto(user);
+        UserResponseDto userResponseDto = userMapper.toResponseDto(user);
+        return userResponseDto;
+    }
+
+    private User loadUser(Long userId) {
+        if (userId == null) throw new EntityNotFoundException("Update request has no id");
+        Optional<User> userOptional = repository.findById(userId);
+        if (userOptional.isEmpty()) throw new EntityNotFoundException("No such user");
+        User user = userOptional.get();
+        return user;
     }
 
     @Override
@@ -36,7 +45,8 @@ public class AccountServiceImpl implements AccountService {
         BigDecimal initialAccountBalance = user.getInitialAccountBalance();
         user.increaseAccountBalance(depositDto.getAmount());
         if (initialAccountBalance == null) startInterestAccrual(user);
-        return userMapper.toResponseDto(user);
+        UserResponseDto userResponseDto = userMapper.toResponseDto(user);
+        return userResponseDto;
     }
 
     private void startInterestAccrual(User user) {
@@ -65,17 +75,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional(readOnly = false)
-    public UserResponseDto withdrawFromDeposit(long userId, DepositRequestDto depositDto) {
+    public UserResponseDto withdraw(long userId, DepositRequestDto depositDto) {
         User user = loadUser(userId);
         user.decreaseAccountBalance(depositDto.getAmount());
-        return userMapper.toResponseDto(user);
-    }
-
-    private User loadUser(Long userId) {
-        if (userId == null) throw new EntityNotFoundException("Update request has no id");
-        Optional<User> userOptional = repository.findById(userId);
-        if (userOptional.isEmpty()) throw new EntityNotFoundException("No such user");
-        User user = userOptional.get();
-        return user;
+        UserResponseDto userResponseDto = userMapper.toResponseDto(user);
+        return userResponseDto;
     }
 }

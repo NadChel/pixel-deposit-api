@@ -10,15 +10,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.math.BigDecimal;
 
 @Entity
 @Setter
 @Getter
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Account {
 
     @Id

@@ -1,5 +1,6 @@
 package com.example.pixel_deposit_api.data.entity;
 
+import com.example.pixel_deposit_api.exception.AccountNotFoundException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,6 +45,10 @@ public class User {
         account.setInitialBalance(initialAccountBalance);
     }
 
+    private void ensureAccountSet() {
+        if (account == null) account = Account.forUser(this);
+    }
+
     public void setAccountBalance(BigDecimal newBalance) {
         ensureAccountSet();
         account.setBalance(newBalance);
@@ -54,12 +59,12 @@ public class User {
         account.increaseBalance(amount);
     }
 
-    private void ensureAccountSet() {
-        if (account == null) account = Account.forUser(this);
+    public void decreaseAccountBalance(BigDecimal amount) {
+        assertAccountSet();
+        account.decreaseBalance(amount);
     }
 
-    public void decreaseAccountBalance(BigDecimal amount) {
-        ensureAccountSet();
-        account.decreaseBalance(amount);
+    private void assertAccountSet() {
+        if (account == null) throw new AccountNotFoundException();
     }
 }
