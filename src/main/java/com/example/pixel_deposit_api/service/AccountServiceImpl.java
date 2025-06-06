@@ -52,10 +52,13 @@ public class AccountServiceImpl implements AccountService {
     private void startInterestAccrual(User user) {
         user.setInitialAccountBalance(user.getAccountBalance());
         Executors.newSingleThreadScheduledExecutor()
-                .scheduleWithFixedDelay(() -> accrueInterest(user), 30, 30, TimeUnit.SECONDS);
+                .scheduleWithFixedDelay(() -> reloadAndAccrueInterest(user), 30, 30, TimeUnit.SECONDS);
     }
 
-    @Transactional(readOnly = false)
+    private void reloadAndAccrueInterest(User user) {
+        repository.findById(user.getId()).ifPresent(this::accrueInterest);
+    }
+
     private void accrueInterest(User user) {
         BigDecimal newAccountBalance = calculateNewAccountBalance(user);
         if (newAccountBalance == null) return;
