@@ -67,11 +67,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private BigDecimal calculateNewAccountBalance(User user) {
-        BigDecimal currentAccountBalance = user.getAccountBalance();
-        BigDecimal accountBalanceWithInterest = currentAccountBalance.multiply(BigDecimal.valueOf(1.1));
         BigDecimal initialAccountBalance = user.getInitialAccountBalance();
         if (initialAccountBalance == null) return null;
         BigDecimal maxAccountBalance = initialAccountBalance.multiply(BigDecimal.valueOf(2.07));
+        BigDecimal currentAccountBalance = user.getAccountBalance();
+        if (maxAccountBalance.compareTo(currentAccountBalance) <= 0) return null;
+        BigDecimal accountBalanceWithInterest = currentAccountBalance.multiply(BigDecimal.valueOf(1.1));
         BigDecimal newAccountBalance = accountBalanceWithInterest.min(maxAccountBalance);
         return newAccountBalance;
     }
